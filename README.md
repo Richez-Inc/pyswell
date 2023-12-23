@@ -34,33 +34,23 @@ This may evolve to return individual classes with advanced processing and method
 
 
 
-## Getting Setup
-1. Clone SwellPy and build locally
-```
-git clone git@github.com:swellstores/swellpy.git
-
-python -m build
-```
-
-2. Install and Import
+## Installation
+1. Install the package
 
 ```
-pip install [relative path to swellpy]
+pip install -e . --config-settings editable_mode=strict
 ```
 
 ```python
 from swellpy import Swell
 ```
 
-3. Instantiate a new Swell instance
+2. Import the Swell class
 ```python
-    swell = Swell({
-        store_id: "SWELL_STORE_ID",
-        api_key: "SWELL_API_KEY"
-    )}
+    swell = Swell({"store_id": "SWELL_STORE_ID", "api_key": "SWELL_API_KEY"})
 ```
 
-4. Request resource
+3. Make a request
 ```python
 response = swell.products.create({'name': 'my-product-slug'})
 print(response) # or setup logging (see below)

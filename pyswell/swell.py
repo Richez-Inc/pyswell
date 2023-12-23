@@ -38,15 +38,13 @@ class Swell:
 
     """
 
-    def __init__(
-        self,
-        params  # TODO: Add type hinting here
-    ):
+    def __init__(self, params):  # TODO: Add type hinting here
         """
         Initialize a Swell class instance
         """
-        store_id = params['store_id']
-        api_key = params['api_key']
+        store_id = params["store_id"]
+        api_key = params["api_key"]
+
         class APIKeyMissingError(Exception):
             pass
 
@@ -58,7 +56,8 @@ class Swell:
             )
 
         s = sessions.BaseUrlSession(
-            base_url=f'https://{store_id}:{api_key}@api.swell.store')
+            base_url=f"https://{store_id}:{api_key}@api.swell.store"
+        )
         self._base_url = s.base_url
 
         session = requests.Session()
@@ -67,17 +66,16 @@ class Swell:
         self.rate_limit_calls = 1
         self.rate_limit_period = 1
 
-        if ("options" in params):
+        if "options" in params:
             options = params["options"]
-            if ("rate_limit_calls" in options):
+            if "rate_limit_calls" in options:
                 self.rate_limit_calls = options["rate_limit_calls"]
-            if ("rate_limit_period" in options):
+            if "rate_limit_period" in options:
                 self.rate_limit_period = options["rate_limit_period"]
 
         self.logger = logging.getLogger(__name__)
         self.logger.setLevel(logging.DEBUG)
         self.logger.addHandler(logging.NullHandler())
-
 
         self.accounts = Accounts(self)
         self.attributes = Attributes(self)
@@ -91,7 +89,7 @@ class Swell:
         self.credits = AccountCredits(self)
         self.debits = Debits(self)
         self.events = Events(self)
-        self.giftcards = Giftcards(self) 
+        self.giftcards = Giftcards(self)
         self.invoices = Invoices(self)
         self.orders = Orders(self)
         self.payments = Payments(self)
