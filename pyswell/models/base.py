@@ -1,6 +1,5 @@
 from ..utilities import handle_requests_response
 from typing import Optional
-from ratelimit import limits, sleep_and_retry
 
 
 class Base:
@@ -22,14 +21,7 @@ class Base:
             kwargs["required_fields"] if "required_fields" in kwargs else None
         )
 
-        @sleep_and_retry
-        @limits(
-            calls=self._swell.rate_limit_calls, period=self._swell.rate_limit_period
-        )
-        def check_limit():
-            return
-
-        self.check_limit = check_limit
+        self.check_limit = self._swell.check_limit
 
     def list(self, params: Optional[dict] = None) -> dict:
         """Lists all items in the collection

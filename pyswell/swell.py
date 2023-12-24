@@ -1,5 +1,8 @@
 import requests
 import logging
+from typing import Optional
+from .utilities import handle_requests_response
+from ratelimit import limits, sleep_and_retry
 
 from requests_toolbelt import sessions
 
@@ -30,6 +33,7 @@ from .models.payments.refunds import Refunds
 from .models.returns import Returns
 from .models.shipments import Shipments
 from .models.webhooks import Webhooks
+from .models.upload_notes import UploadNotes
 
 
 class Swell:
@@ -73,6 +77,13 @@ class Swell:
             if "rate_limit_period" in options:
                 self.rate_limit_period = options["rate_limit_period"]
 
+        @sleep_and_retry
+        @limits(calls=self.rate_limit_calls, period=self.rate_limit_period)
+        def check_limit():
+            return
+
+        self.check_limit = check_limit
+
         self.logger = logging.getLogger(__name__)
         self.logger.setLevel(logging.DEBUG)
         self.logger.addHandler(logging.NullHandler())
@@ -104,3 +115,79 @@ class Swell:
         self.subscriptions = Subscriptions(self)
         self.variants = ProductVariants(self)
         self.webhooks = Webhooks(self)
+        self.upload_notes = UploadNotes(self)
+
+    def get(self, endpoint: str, params: Optional[dict] = None) -> dict:
+        """Send a GET request to the API
+
+        Args:
+            endpoint: The API endpoint to send the request to
+            params: Optional dictionary of query parameters
+
+        Returns:
+            JSON response from the API
+        """
+        self.check_limit()
+
+        response = self._session.get(url=f"{self._base_url}/{endpoint}", params=params)
+
+        return handle_requests_response(self, response)
+
+    def post(self, endpoint: str, params: Optional[dict] = None) -> dict:
+        """Send a POST request to the API
+
+        Args:
+            endpoint: The API endpoint to send the request to
+            params: Optional dictionary of query parameters
+
+        Returns:
+            JSON response from the API
+        """
+        self.check_limit()
+
+        response = self._session.post(url=f"{self._base_url}/{endpoint}", params=params)
+
+        return handle_requests_response(self, response)
+
+    def put(self, endpoint: str, params: Optional[dict] = None) -> dict:
+        """Send a PUT request to the API
+
+        Args:
+            endpoint: The API endpoint to send the request to
+            params: Optional dictionary of query parameters
+
+        Returns:
+            JSON response from the API
+        """
+        self.check_limit()
+
+        response = self._session.put(url=f"{self._base_url}/{endpoint}", params=params)
+
+        return handle_requests_response(self, response)
+
+    def delete(self, endpoint: str, params: Optional[dict] = None) -> dict:
+        """Send a DELETE request to the API
+
+        Args:
+            endpoint: The API endpoint to send the request to
+            params: Optional dictionary of query parameters
+
+        Returns:
+            JSON response from the API
+        """
+        self.check_limit()
+
+        response = self._session.delete(
+            url=f"{self._base_url}/{endpoint}", params=params
+        )
+
+        return handle_requests_response(self, response)
+
+    def __repr__(self):
+        return f"<Swell {self._base_url}>"
+
+    def __str__(self):
+        return f"<Swell {self._base_url}>"
+
+    def __del__(self):
+        self._session.close()
