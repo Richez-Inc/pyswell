@@ -35,6 +35,8 @@ from .models.shipments import Shipments
 from .models.webhooks import Webhooks
 from .models.upload_notes import UploadNotes
 from .models.inquiry_question import InquiryQuestion
+from .models.review import Review
+from .models.review_reply import ReviewReply
 
 
 class Swell:
@@ -118,6 +120,8 @@ class Swell:
         self.webhooks = Webhooks(self)
         self.upload_notes = UploadNotes(self)
         self.inquiry_questions = InquiryQuestion(self)
+        self.reviews = Review(self)
+        self.review_replies = ReviewReply(self)
 
     def get(self, endpoint: str, params: Optional[dict] = None) -> dict:
         """Send a GET request to the API
