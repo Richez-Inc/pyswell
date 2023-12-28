@@ -38,6 +38,7 @@ from .models.inquiry_question import InquiryQuestion
 from .models.review import Review
 from .models.review_reply import ReviewReply
 from .models.alarm import Alarm
+from .models.brand import Brand
 
 
 class Swell:
@@ -124,6 +125,7 @@ class Swell:
         self.reviews = Review(self)
         self.review_replies = ReviewReply(self)
         self.alarms = Alarm(self)
+        self.brands = Brand(self)
 
     def get(self, endpoint: str, params: Optional[dict] = None) -> dict:
         """Send a GET request to the API
